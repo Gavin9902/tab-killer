@@ -164,10 +164,23 @@ function render() {
   setupNoteEditing();
 }
 
+function getRootDomain(url) {
+  try {
+    let hostname = new URL(url).hostname.replace(/^www\./, '');
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      return parts.slice(1).join('.');
+    }
+    return hostname;
+  } catch {
+    return url;
+  }
+}
+
 function groupByDomain(tabs) {
   const groups = new Map();
   for (const tab of tabs) {
-    const domain = extractDomain(tab.url);
+    const domain = getRootDomain(tab.url);
     if (!groups.has(domain)) {
       groups.set(domain, []);
     }
@@ -199,6 +212,7 @@ function renderGrouped(tabs) {
 
   cardGrid.innerHTML = groups.map(([domain, domainTabs]) => {
     const size = sphereSize(domainTabs.length);
+    const singleUrl = domainTabs.length === 1 ? escapeAttr(domainTabs[0].url) : '';
     const faviconHtml = domainTabs[0].favIconUrl
       ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
       : `<span class="sphere-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
@@ -214,8 +228,10 @@ function renderGrouped(tabs) {
           <button class="panel-card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
         </div>`).join('');
 
+    const singleClass = domainTabs.length === 1 ? ' is-single' : '';
+
     return `
-      <div class="domain-sphere" style="--sphere-size: ${size}px" data-domain="${escapeAttr(domain)}">
+      <div class="domain-sphere${singleClass}" style="--sphere-size: ${size}px" data-domain="${escapeAttr(domain)}" data-single-url="${singleUrl}">
         <div class="sphere-face">
           <div class="sphere-dots">${dotsHtml}${overflow}</div>
           <div class="sphere-icon">${faviconHtml}</div>
@@ -231,6 +247,15 @@ function renderGrouped(tabs) {
         </div>
       </div>`;
   }).join('');
+
+  // 单 tab 域名：点击直接打开
+  cardGrid.querySelectorAll('.domain-sphere.is-single .sphere-face').forEach(face => {
+    face.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const sphere = face.closest('.domain-sphere');
+      restoreTab(sphere.dataset.singleUrl);
+    });
+  });
 
   // 面板恢复按钮
   cardGrid.querySelectorAll('.panel-card-restore').forEach(btn => {
