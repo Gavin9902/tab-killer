@@ -3,13 +3,15 @@
   "name": "Tab Killer",
   "version": "1.0.0",
   "description": "自动归档不活跃标签页，释放内存。用自然语言搜索找回你需要的页面。",
-  "permissions": ["tabs", "storage", "alarms"],
+  "permissions": ["tabs", "storage", "alarms", "sidePanel"],
   "background": {
     "service_worker": "service-worker.js"
   },
   "action": {
-    "default_popup": "popup.html",
     "default_title": "记录此页面的目的"
+  },
+  "side_panel": {
+    "default_path": "sidebar.html"
   },
   "chrome_url_overrides": {
     "newtab": "newtab.html"

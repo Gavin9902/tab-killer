@@ -13,6 +13,7 @@ let activityLoaded = false;
 // ===== 初始化 =====
 async function init() {
   await loadActivityFromSession();
+  chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
   chrome.alarms.create('tabCheck', { periodInMinutes: CHECK_INTERVAL_MINUTES });
   chrome.alarms.create('duplicateCheck', { periodInMinutes: DUPLICATE_CHECK_INTERVAL_MINUTES });
   chrome.alarms.create('firstRun', { delayInMinutes: 0 });
