@@ -1,57 +1,83 @@
 document.addEventListener('DOMContentLoaded', init);
 
+let currentTab = null;
+
 async function init() {
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
-  const tab = tabs[0];
+  currentTab = tabs[0];
 
-  if (!tab || !isTrackable(tab)) {
+  if (!currentTab || !isTrackable(currentTab)) {
     document.getElementById('title').textContent = '此页面无法记录（系统页面）';
     document.getElementById('noteInput').disabled = true;
     document.getElementById('saveBtn').disabled = true;
     return;
   }
 
-  document.getElementById('favicon').src = tab.favIconUrl || '';
-  document.getElementById('title').textContent = tab.title || tab.url;
+  document.getElementById('favicon').src = currentTab.favIconUrl || '';
+  document.getElementById('title').textContent = currentTab.title || currentTab.url;
 
-  // 检查是否已有笔记
-  const data = await chrome.storage.local.get('watchedTabs');
-  const watched = data.watchedTabs || [];
-  const existing = watched.find(t => normalizeUrl(t.url) === normalizeUrl(tab.url));
-  if (existing && existing.note) {
-    document.getElementById('noteInput').value = existing.note;
-  }
+  await loadExistingNote();
 
-  document.getElementById('saveBtn').addEventListener('click', async () => {
-    const note = document.getElementById('noteInput').value.trim();
-    await chrome.runtime.sendMessage({
-      type: 'saveNote',
-      tab: {
-        url: tab.url,
-        title: tab.title,
-        favIconUrl: tab.favIconUrl || '',
-      },
-      note,
-    });
+  document.getElementById('saveBtn').addEventListener('click', doSave);
 
-    const fb = document.getElementById('feedback');
-    fb.textContent = '已记录';
-    fb.className = 'visible';
-    setTimeout(() => {
-      fb.className = '';
-    }, 1500);
-  });
-
-  // Enter 保存
   document.getElementById('noteInput').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter' && (e.metaKey || e.ctrlKey)) {
-      document.getElementById('saveBtn').click();
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      doSave();
     }
   });
 
   document.getElementById('portalLink').addEventListener('click', () => {
-    chrome.tabs.create({});
+    chrome.tabs.create({ active: true });
   });
+
+  // 监听归档变化，同步笔记
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.archivedTabs || changes.watchedTabs) {
+      loadExistingNote();
+    }
+  });
+}
+
+async function loadExistingNote() {
+  if (!currentTab) return;
+  const norm = normalizeUrl(currentTab.url);
+
+  // 先查 watchedTabs
+  const wData = await chrome.storage.local.get('watchedTabs');
+  const watched = (wData.watchedTabs || []).find(t => normalizeUrl(t.url) === norm);
+  if (watched && watched.note) {
+    document.getElementById('noteInput').value = watched.note;
+    return;
+  }
+
+  // 再查 archivedTabs
+  const aData = await chrome.storage.local.get('archivedTabs');
+  const archived = (aData.archivedTabs || []).find(t => normalizeUrl(t.url) === norm);
+  if (archived && archived.note) {
+    document.getElementById('noteInput').value = archived.note;
+    return;
+  }
+
+  document.getElementById('noteInput').value = '';
+}
+
+async function doSave() {
+  const note = document.getElementById('noteInput').value.trim();
+  await chrome.runtime.sendMessage({
+    type: 'saveNote',
+    tab: {
+      url: currentTab.url,
+      title: currentTab.title,
+      favIconUrl: currentTab.favIconUrl || '',
+    },
+    note,
+  });
+
+  const fb = document.getElementById('feedback');
+  fb.textContent = '已记录';
+  fb.className = 'visible';
+  setTimeout(() => { fb.className = ''; }, 1500);
 }
 
 function isTrackable(tab) {

@@ -426,6 +426,12 @@ function enterEditMode(noteEl) {
     if (tab && tab.note !== newNote) {
       tab.note = newNote;
       await saveArchivedTabs();
+      // 同步到 sidebar（watchedTabs）
+      chrome.runtime.sendMessage({
+        type: 'saveNote',
+        tab: { url: tab.url, title: tab.title, favIconUrl: tab.favIconUrl || '' },
+        note: newNote,
+      });
     }
     // 重新渲染以恢复高亮
     render();
