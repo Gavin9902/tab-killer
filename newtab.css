@@ -87,12 +87,118 @@ body {
 #headerRight {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+}
+
+#viewToggle {
+  display: flex;
+  background: var(--filter-bg);
+  border-radius: 8px;
+  padding: 2px;
+}
+
+.view-btn {
+  padding: 4px 12px;
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 12px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.view-btn.active {
+  background: var(--card-bg);
+  color: var(--text);
+  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 #tabCount {
   font-size: 12px;
   color: var(--text-tertiary);
+}
+
+/* ===== Recent Scroll ===== */
+#recentScroll {
+  margin-bottom: 20px;
+  overflow: hidden;
+}
+
+#recentScroll.hidden {
+  display: none;
+}
+
+#recentTrack {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding: 4px 0 8px;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+}
+
+#recentTrack::-webkit-scrollbar {
+  display: none;
+}
+
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px;
+  border: 1px solid var(--card-border);
+  border-radius: 20px;
+  background: var(--card-bg);
+  cursor: pointer;
+  flex-shrink: 0;
+  font-family: inherit;
+  color: var(--text);
+  transition: all 0.15s;
+  max-width: 240px;
+}
+
+.recent-item:hover {
+  border-color: var(--accent);
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.recent-favicon {
+  width: 16px;
+  height: 16px;
+  border-radius: 3px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--filter-bg);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.recent-favicon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.recent-favicon .mini-fallback {
+  font-size: 8px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.recent-title {
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.recent-time {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  flex-shrink: 0;
 }
 
 /* ===== Hero / Search ===== */

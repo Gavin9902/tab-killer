@@ -11,6 +11,10 @@
     <header id="header">
       <h1 id="logo">Tab Killer</h1>
       <div id="headerRight">
+        <div id="viewToggle">
+          <button class="view-btn active" data-view="tile">站点</button>
+          <button class="view-btn" data-view="list">列表</button>
+        </div>
         <span id="tabCount"></span>
       </div>
     </header>
@@ -29,6 +33,10 @@
           </svg>
         </button>
       </div>
+    </section>
+
+    <section id="recentScroll" class="hidden">
+      <div id="recentTrack"></div>
     </section>
 
     <nav id="filters">

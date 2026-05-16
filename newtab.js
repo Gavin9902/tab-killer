@@ -10,11 +10,15 @@ const emptyState = document.getElementById('emptyState');
 const googleLink = document.getElementById('googleLink');
 const tabCount = document.getElementById('tabCount');
 const filterBtns = document.querySelectorAll('.filter-btn');
+const viewBtns = document.querySelectorAll('.view-btn');
+const recentScroll = document.getElementById('recentScroll');
+const recentTrack = document.getElementById('recentTrack');
 
 // ===== 状态 =====
 let archivedTabs = [];
 let searchQuery = '';
 let timeFilter = 'all';
+let viewMode = 'tile';
 let debounceTimer = null;
 
 // ===== 初始化 =====
@@ -35,6 +39,15 @@ function setupEventListeners() {
       filterBtns.forEach(b => b.classList.remove('active'));
       btn.classList.add('active');
       timeFilter = btn.dataset.filter;
+      render();
+    });
+  });
+
+  viewBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      viewBtns.forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      viewMode = btn.dataset.view;
       render();
     });
   });
@@ -157,11 +170,50 @@ function render() {
 
   if (searchQuery) {
     renderCards(results);
-  } else {
+    recentScroll.classList.add('hidden');
+    return;
+  }
+
+  // No search: show recent scroll + chosen view
+  renderRecentScroll(results);
+
+  if (viewMode === 'tile') {
     renderGrouped(results);
+  } else {
+    renderListView(results);
   }
 
   setupNoteEditing();
+}
+
+function renderRecentScroll(tabs) {
+  const recent = tabs.slice(0, 12);
+  if (recent.length === 0) {
+    recentScroll.classList.add('hidden');
+    return;
+  }
+  recentScroll.classList.remove('hidden');
+  recentTrack.innerHTML = recent.map(tab => {
+    const domain = extractDomain(tab.url);
+    const faviconHtml = tab.favIconUrl
+      ? `<img src="${escapeAttr(tab.favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'mini-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
+      : `<span class="mini-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
+    return `
+      <button class="recent-item" data-url="${escapeAttr(tab.url)}">
+        <div class="recent-favicon">${faviconHtml}</div>
+        <span class="recent-title">${escapeHtml(tab.title)}</span>
+        <span class="recent-time">${formatRelativeTime(tab.archivedAt)}</span>
+      </button>`;
+  }).join('');
+
+  recentTrack.querySelectorAll('.recent-item').forEach(btn => {
+    btn.addEventListener('click', () => restoreTab(btn.dataset.url));
+  });
+}
+
+function renderListView(tabs) {
+  cardGrid.className = '';
+  renderCards(tabs);
 }
 
 function getRootDomain(url) {
