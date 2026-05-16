@@ -187,10 +187,10 @@ function groupByDomain(tabs) {
 }
 
 function sphereSize(count) {
-  if (count >= 10) return 120;
-  if (count >= 6) return 104;
-  if (count >= 3) return 90;
-  return 80;
+  if (count >= 10) return 130;
+  if (count >= 6) return 114;
+  if (count >= 3) return 100;
+  return 90;
 }
 
 function renderGrouped(tabs) {
@@ -203,7 +203,9 @@ function renderGrouped(tabs) {
       ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
       : `<span class="sphere-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
 
-    const dotsHtml = domainTabs.slice(0, 9).map(() => '<span class="sphere-dot"></span>').join('');
+    const dotCount = Math.min(domainTabs.length, 5);
+    const dotsHtml = Array.from({ length: dotCount }, () => '<span class="sphere-dot"></span>').join('');
+    const overflow = domainTabs.length > 5 ? `<span class="sphere-overflow">+${domainTabs.length - 5}</span>` : '';
 
     const cardsHtml = domainTabs.map(tab => `
         <div class="panel-card" data-url="${escapeAttr(tab.url)}">
@@ -215,7 +217,7 @@ function renderGrouped(tabs) {
     return `
       <div class="domain-sphere" style="--sphere-size: ${size}px" data-domain="${escapeAttr(domain)}">
         <div class="sphere-face">
-          <div class="sphere-dots">${dotsHtml}</div>
+          <div class="sphere-dots">${dotsHtml}${overflow}</div>
           <div class="sphere-icon">${faviconHtml}</div>
           <span class="sphere-domain">${escapeHtml(domain)}</span>
         </div>

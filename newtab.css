@@ -356,8 +356,8 @@ body {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 20px 16px;
-  padding: 12px 0;
+  gap: 28px 20px;
+  padding: 16px 0;
 }
 
 .domain-sphere {
@@ -373,7 +373,6 @@ body {
 
 .sphere-face {
   width: var(--sphere-size);
-  height: var(--sphere-size);
   border-radius: 18px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
@@ -381,9 +380,8 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
   gap: 6px;
-  padding: 14px 10px 10px;
+  padding: 16px 12px 12px;
   cursor: pointer;
   position: relative;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -392,21 +390,21 @@ body {
 }
 
 .sphere-face:hover {
-  transform: scale(1.1);
-  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
-  z-index: 2;
+  transform: scale(1.18);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12);
 }
 
 .sphere-icon {
-  width: calc(var(--sphere-size) - 36px);
-  height: calc(var(--sphere-size) - 36px);
-  border-radius: 12px;
+  width: calc(var(--sphere-size) - 32px);
+  height: calc(var(--sphere-size) - 32px);
+  border-radius: 14px;
   overflow: hidden;
   flex-shrink: 0;
   background: #f8f7f4;
   display: flex;
   align-items: center;
   justify-content: center;
+  position: relative;
 }
 
 .sphere-icon img {
@@ -422,49 +420,74 @@ body {
   text-transform: uppercase;
 }
 
-.sphere-domain {
-  font-size: 10px;
-  color: var(--text-tertiary);
-  max-width: calc(var(--sphere-size) - 8px);
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  line-height: 1;
-}
-
 .sphere-dots {
   position: absolute;
-  top: -4px;
-  right: -2px;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
   display: flex;
   gap: 3px;
+  justify-content: center;
   pointer-events: none;
   z-index: 3;
 }
 
 .sphere-dot {
-  width: 6px;
-  height: 6px;
+  width: 5px;
+  height: 5px;
   border-radius: 50%;
-  background: #b8b2a6;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.08);
+  background: #6b655c;
+}
+
+.sphere-overflow {
+  font-size: 10px;
+  font-weight: 600;
+  color: #6b655c;
+  line-height: 1;
+  margin-left: 1px;
+}
+
+.sphere-domain {
+  font-size: 10px;
+  color: var(--text-secondary);
+  text-align: center;
+  line-height: 1.25;
+  width: calc(var(--sphere-size) - 4px);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  overflow-wrap: break-word;
+  word-break: break-all;
+}
+
+/* Bridge — invisible area connecting tile to panel so hover doesn't break */
+.sphere-face::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 14px;
+  pointer-events: auto;
 }
 
 /* Panel */
 .sphere-panel {
   position: absolute;
-  top: calc(var(--sphere-size) + 12px);
+  top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(8px);
+  margin-top: 10px;
   width: 420px;
-  max-width: calc(100vw - 32px);
+  max-width: 90vw;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   border-radius: 14px;
   box-shadow: 0 8px 40px rgba(0,0,0,0.12);
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.25s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.25s;
+  transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), visibility 0.2s;
   z-index: 100;
   pointer-events: none;
 }
@@ -676,11 +699,11 @@ body {
   }
 
   #cardGrid.grouped {
-    gap: 16px 14px;
+    gap: 20px 16px;
   }
 
   .sphere-panel {
-    width: 340px;
+    width: 360px;
   }
 
   .card {
@@ -698,17 +721,11 @@ body {
   }
 
   #cardGrid.grouped {
-    gap: 12px 10px;
+    gap: 14px 10px;
   }
 
   .sphere-panel {
     width: calc(100vw - 32px);
-    left: 50%;
-    transform: translateX(-50%) translateY(8px);
-  }
-
-  .domain-sphere:hover .sphere-panel {
-    transform: translateX(-50%) translateY(0);
   }
 
   #logo {
