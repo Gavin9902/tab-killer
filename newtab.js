@@ -154,8 +154,94 @@ function render() {
 
   hideStates();
   updateTabCount(results);
-  renderCards(results);
+
+  if (searchQuery) {
+    renderCards(results);
+  } else {
+    renderGrouped(results);
+  }
+
   setupNoteEditing();
+}
+
+function groupByDomain(tabs) {
+  const groups = new Map();
+  for (const tab of tabs) {
+    const domain = extractDomain(tab.url);
+    if (!groups.has(domain)) {
+      groups.set(domain, []);
+    }
+    groups.get(domain).push(tab);
+  }
+  // 按每组最新归档时间排序
+  const sorted = [...groups.entries()].sort((a, b) => {
+    const aNewest = Math.max(...a[1].map(t => t.archivedAt));
+    const bNewest = Math.max(...b[1].map(t => t.archivedAt));
+    return bNewest - aNewest;
+  });
+  // 每组内部按归档时间倒序
+  for (const [, tabs] of sorted) {
+    tabs.sort((a, b) => b.archivedAt - a.archivedAt);
+  }
+  return sorted;
+}
+
+function renderGrouped(tabs) {
+  const groups = groupByDomain(tabs);
+  cardGrid.className = 'grouped';
+
+  cardGrid.innerHTML = groups.map(([domain, tabs]) => {
+    const faviconHtml = tabs[0].favIconUrl
+      ? `<img src="${escapeAttr(tabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'group-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
+      : `<span class="group-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
+
+    const cardsHtml = tabs.map(tab => {
+      const tabDomain = extractDomain(tab.url);
+      const cardFaviconHtml = tab.favIconUrl
+        ? `<img src="${escapeAttr(tab.favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'fallback\\'>${escapeHtml(tabDomain.charAt(0).toUpperCase())}</span>'" />`
+        : `<span class="fallback">${escapeHtml(tabDomain.charAt(0).toUpperCase())}</span>`;
+
+      let noteHtml = escapeHtml(tab.note || '');
+      let titleHtml = escapeHtml(tab.title);
+
+      return `
+        <div class="card" data-id="${escapeAttr(tab.id)}" data-url="${escapeAttr(tab.url)}">
+          <div class="card-favicon">${cardFaviconHtml}</div>
+          <div class="card-title" title="${escapeAttr(tab.title)}">${titleHtml}</div>
+          <div class="card-note" contenteditable="false" data-tab-id="${escapeAttr(tab.id)}">${noteHtml}</div>
+          <div class="card-meta">
+            <span class="card-time">${formatRelativeTime(tab.archivedAt)}</span>
+            <span class="card-domain">${escapeHtml(tabDomain)}</span>
+            <button class="card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
+          </div>
+        </div>`;
+    }).join('');
+
+    return `
+      <div class="domain-group">
+        <div class="group-header">
+          <div class="group-favicon">${faviconHtml}</div>
+          <span class="group-domain">${escapeHtml(domain)}</span>
+          <span class="group-count">${tabs.length} 页</span>
+        </div>
+        <div class="group-cards">${cardsHtml}</div>
+      </div>`;
+  }).join('');
+
+  // 绑定卡片事件
+  cardGrid.querySelectorAll('.card').forEach(card => {
+    card.addEventListener('click', (e) => {
+      if (e.target.closest('.card-note') || e.target.closest('.card-restore')) return;
+      restoreTab(card.dataset.url);
+    });
+  });
+
+  cardGrid.querySelectorAll('.card-restore').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      restoreTab(btn.dataset.url);
+    });
+  });
 }
 
 function renderCards(tabs) {
