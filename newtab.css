@@ -647,6 +647,14 @@ body {
   flex-direction: column;
   max-height: 280px;
   overflow-y: auto;
+  padding-bottom: 16px;
+}
+
+.panel-cards::after {
+  content: '';
+  display: block;
+  height: 20px;
+  flex-shrink: 0;
 }
 
 .panel-card {
