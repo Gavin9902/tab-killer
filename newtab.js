@@ -289,7 +289,6 @@ function renderGrouped(tabs) {
         <div class="panel-card" data-url="${escapeAttr(tab.url)}" data-id="${escapeAttr(tab.id)}">
           <span class="panel-card-title" title="${escapeAttr(tab.title)}">${escapeHtml(tab.title)}</span>
           <span class="panel-card-time">${formatRelativeTime(tab.archivedAt)}</span>
-          <button class="panel-card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
           <button class="panel-card-delete" data-id="${escapeAttr(tab.id)}" title="删除">×</button>
         </div>`).join('');
 
@@ -323,18 +322,10 @@ function renderGrouped(tabs) {
     });
   });
 
-  // 面板恢复按钮
-  cardGrid.querySelectorAll('.panel-card-restore').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      restoreTab(btn.dataset.url);
-    });
-  });
-
   // 面板行点击恢复
   cardGrid.querySelectorAll('.panel-card').forEach(row => {
     row.addEventListener('click', (e) => {
-      if (e.target.closest('.panel-card-restore') || e.target.closest('.panel-card-delete')) return;
+      if (e.target.closest('.panel-card-delete')) return;
       restoreTab(row.dataset.url);
     });
   });
@@ -380,7 +371,6 @@ function renderCards(tabs) {
         <div class="card-meta">
           <span class="card-time">${formatRelativeTime(tab.archivedAt)}</span>
           <span class="card-domain">${escapeHtml(domain)}</span>
-          <button class="card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
         </div>
       </div>`;
   }).join('');
@@ -388,16 +378,8 @@ function renderCards(tabs) {
   // 卡片点击恢复
   cardGrid.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-note') || e.target.closest('.card-restore') || e.target.closest('.card-delete')) return;
+      if (e.target.closest('.card-note') || e.target.closest('.card-delete')) return;
       restoreTab(card.dataset.url);
-    });
-  });
-
-  // 恢复按钮
-  cardGrid.querySelectorAll('.card-restore').forEach(btn => {
-    btn.addEventListener('click', (e) => {
-      e.stopPropagation();
-      restoreTab(btn.dataset.url);
     });
   });
 
