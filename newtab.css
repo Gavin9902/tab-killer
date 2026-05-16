@@ -207,6 +207,7 @@ body {
 /* ===== Results ===== */
 #results {
   flex: 1;
+  padding-bottom: 120px;
 }
 
 /* ===== Search Bar (Bottom, AI-style) ===== */
