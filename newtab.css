@@ -558,7 +558,6 @@ body {
   -webkit-box-orient: vertical;
   overflow: hidden;
   overflow-wrap: break-word;
-  word-break: break-all;
 }
 
 /* Bridge — invisible area connecting tile to panel so hover doesn't break */

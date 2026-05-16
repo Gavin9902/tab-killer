@@ -265,9 +265,9 @@ function groupByDomain(tabs) {
 
 function sphereSize(count, domain) {
   const base = count >= 10 ? 130 : count >= 6 ? 114 : count >= 3 ? 100 : 90;
-  const chars = domain.length;
-  if (chars <= 12) return base;
-  return Math.min(base + (chars - 12) * 5, 200);
+  // 10px 字体每字符约 6.5px + tile padding 28px + domain padding 8px
+  const needed = Math.ceil(domain.length * 6.5) + 36;
+  return Math.max(base, Math.min(needed, 220));
 }
 
 function renderGrouped(tabs) {
