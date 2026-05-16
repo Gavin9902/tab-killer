@@ -277,9 +277,8 @@ function renderGrouped(tabs) {
   cardGrid.innerHTML = groups.map(([domain, domainTabs]) => {
     const size = sphereSize(domainTabs.length, domain);
     const singleUrl = domainTabs.length === 1 ? escapeAttr(domainTabs[0].url) : '';
-    const faviconHtml = domainTabs[0].favIconUrl
-      ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
-      : `<span class="sphere-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
+    const hiResFavicon = `https://www.google.com/s2/favicons?domain=${encodeURIComponent(domain)}&sz=128`;
+    const faviconHtml = `<img src="${hiResFavicon}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`;
 
     const dotCount = Math.min(domainTabs.length, 5);
     const dotsHtml = Array.from({ length: dotCount }, () => '<span class="sphere-dot"></span>').join('');
@@ -304,7 +303,7 @@ function renderGrouped(tabs) {
         </div>
         <div class="sphere-panel">
           <div class="panel-header">
-            <div class="panel-favicon">${faviconHtml}</div>
+            <div class="panel-favicon"><img src="${hiResFavicon}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" /></div>
             <span class="panel-domain">${escapeHtml(domain)}</span>
             <span class="panel-count">${domainTabs.length} 个页面</span>
           </div>
