@@ -48,6 +48,11 @@ async function init() {
       document.getElementById('saveBtn').click();
     }
   });
+
+  document.getElementById('portalLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    chrome.tabs.create({});
+  });
 }
 
 function isTrackable(tab) {
