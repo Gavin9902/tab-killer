@@ -186,11 +186,18 @@ function groupByDomain(tabs) {
   return sorted;
 }
 
+function spanFor(count) {
+  if (count >= 5) return 3;
+  if (count >= 3) return 2;
+  return 1;
+}
+
 function renderGrouped(tabs) {
   const groups = groupByDomain(tabs);
   cardGrid.className = 'grouped';
 
   cardGrid.innerHTML = groups.map(([domain, tabs]) => {
+    const span = spanFor(tabs.length);
     const faviconHtml = tabs[0].favIconUrl
       ? `<img src="${escapeAttr(tabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'group-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
       : `<span class="group-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
@@ -218,11 +225,11 @@ function renderGrouped(tabs) {
     }).join('');
 
     return `
-      <div class="domain-group">
+      <div class="domain-group span-${span}">
         <div class="group-header">
           <div class="group-favicon">${faviconHtml}</div>
           <span class="group-domain">${escapeHtml(domain)}</span>
-          <span class="group-count">${tabs.length} 页</span>
+          <span class="group-count">${tabs.length}</span>
         </div>
         <div class="group-cards">${cardsHtml}</div>
       </div>`;
