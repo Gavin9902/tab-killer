@@ -203,31 +203,21 @@ function renderGrouped(tabs) {
       ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
       : `<span class="sphere-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
 
-    const cardsHtml = domainTabs.map(tab => {
-      const tabDomain = extractDomain(tab.url);
-      const cardFaviconHtml = tab.favIconUrl
-        ? `<img src="${escapeAttr(tab.favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'fallback\\'>${escapeHtml(tabDomain.charAt(0).toUpperCase())}</span>'" />`
-        : `<span class="fallback">${escapeHtml(tabDomain.charAt(0).toUpperCase())}</span>`;
+    const dotsHtml = domainTabs.slice(0, 9).map(() => '<span class="sphere-dot"></span>').join('');
 
-      return `
-        <div class="card" data-id="${escapeAttr(tab.id)}" data-url="${escapeAttr(tab.url)}">
-          <div class="card-favicon">${cardFaviconHtml}</div>
-          <div class="card-title" title="${escapeAttr(tab.title)}">${escapeHtml(tab.title)}</div>
-          <div class="card-note" contenteditable="false" data-tab-id="${escapeAttr(tab.id)}">${escapeHtml(tab.note || '')}</div>
-          <div class="card-meta">
-            <span class="card-time">${formatRelativeTime(tab.archivedAt)}</span>
-            <span class="card-domain">${escapeHtml(tabDomain)}</span>
-            <button class="card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
-          </div>
-        </div>`;
-    }).join('');
+    const cardsHtml = domainTabs.map(tab => `
+        <div class="panel-card" data-url="${escapeAttr(tab.url)}">
+          <span class="panel-card-title" title="${escapeAttr(tab.title)}">${escapeHtml(tab.title)}</span>
+          <span class="panel-card-time">${formatRelativeTime(tab.archivedAt)}</span>
+          <button class="panel-card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
+        </div>`).join('');
 
     return `
       <div class="domain-sphere" style="--sphere-size: ${size}px" data-domain="${escapeAttr(domain)}">
         <div class="sphere-face">
+          <div class="sphere-dots">${dotsHtml}</div>
           <div class="sphere-icon">${faviconHtml}</div>
           <span class="sphere-domain">${escapeHtml(domain)}</span>
-          <span class="sphere-count">${domainTabs.length}</span>
         </div>
         <div class="sphere-panel">
           <div class="panel-header">
@@ -240,18 +230,19 @@ function renderGrouped(tabs) {
       </div>`;
   }).join('');
 
-  // 绑定卡片事件
-  cardGrid.querySelectorAll('.card').forEach(card => {
-    card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-note') || e.target.closest('.card-restore')) return;
-      restoreTab(card.dataset.url);
-    });
-  });
-
-  cardGrid.querySelectorAll('.card-restore').forEach(btn => {
+  // 面板恢复按钮
+  cardGrid.querySelectorAll('.panel-card-restore').forEach(btn => {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       restoreTab(btn.dataset.url);
+    });
+  });
+
+  // 面板行点击恢复
+  cardGrid.querySelectorAll('.panel-card').forEach(row => {
+    row.addEventListener('click', (e) => {
+      if (e.target.closest('.panel-card-restore')) return;
+      restoreTab(row.dataset.url);
     });
   });
 }
