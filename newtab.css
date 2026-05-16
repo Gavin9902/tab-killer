@@ -465,15 +465,15 @@ body {
 
 .sphere-face {
   width: var(--sphere-size);
-  border-radius: 18px;
+  border-radius: 16px;
   background: var(--card-bg);
   border: 1px solid var(--card-border);
   box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 6px;
-  padding: 16px 12px 12px;
+  gap: 8px;
+  padding: 14px 10px 12px;
   cursor: pointer;
   position: relative;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
@@ -487,9 +487,9 @@ body {
 }
 
 .sphere-icon {
-  width: calc(var(--sphere-size) - 32px);
-  height: calc(var(--sphere-size) - 32px);
-  border-radius: 14px;
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
   overflow: hidden;
   flex-shrink: 0;
   background: #f8f7f4;
