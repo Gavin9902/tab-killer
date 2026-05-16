@@ -186,23 +186,24 @@ function groupByDomain(tabs) {
   return sorted;
 }
 
-function spanFor(count) {
-  if (count >= 5) return 3;
-  if (count >= 3) return 2;
-  return 1;
-}
-
 function renderGrouped(tabs) {
   const groups = groupByDomain(tabs);
   cardGrid.className = 'grouped';
 
-  cardGrid.innerHTML = groups.map(([domain, tabs]) => {
-    const span = spanFor(tabs.length);
-    const faviconHtml = tabs[0].favIconUrl
-      ? `<img src="${escapeAttr(tabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'group-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
-      : `<span class="group-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
+  let html = '';
+  for (const [domain, domainTabs] of groups) {
+    const faviconHtml = domainTabs[0].favIconUrl
+      ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'divider-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`
+      : `<span class="divider-fallback">${escapeHtml(domain.charAt(0).toUpperCase())}</span>`;
 
-    const cardsHtml = tabs.map(tab => {
+    html += `
+      <div class="domain-divider">
+        <div class="divider-favicon">${faviconHtml}</div>
+        <span class="divider-domain">${escapeHtml(domain)}</span>
+        <span class="divider-count">${domainTabs.length}</span>
+      </div>`;
+
+    for (const tab of domainTabs) {
       const tabDomain = extractDomain(tab.url);
       const cardFaviconHtml = tab.favIconUrl
         ? `<img src="${escapeAttr(tab.favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'fallback\\'>${escapeHtml(tabDomain.charAt(0).toUpperCase())}</span>'" />`
@@ -211,7 +212,7 @@ function renderGrouped(tabs) {
       let noteHtml = escapeHtml(tab.note || '');
       let titleHtml = escapeHtml(tab.title);
 
-      return `
+      html += `
         <div class="card" data-id="${escapeAttr(tab.id)}" data-url="${escapeAttr(tab.url)}">
           <div class="card-favicon">${cardFaviconHtml}</div>
           <div class="card-title" title="${escapeAttr(tab.title)}">${titleHtml}</div>
@@ -222,18 +223,10 @@ function renderGrouped(tabs) {
             <button class="card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
           </div>
         </div>`;
-    }).join('');
+    }
+  }
 
-    return `
-      <div class="domain-group span-${span}">
-        <div class="group-header">
-          <div class="group-favicon">${faviconHtml}</div>
-          <span class="group-domain">${escapeHtml(domain)}</span>
-          <span class="group-count">${tabs.length}</span>
-        </div>
-        <div class="group-cards">${cardsHtml}</div>
-      </div>`;
-  }).join('');
+  cardGrid.innerHTML = html;
 
   // 绑定卡片事件
   cardGrid.querySelectorAll('.card').forEach(card => {
