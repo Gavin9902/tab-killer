@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Killer</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="container">
+    <div id="tabInfo">
+      <img id="favicon" src="" alt="" width="16" height="16" />
+      <span id="title">加载中...</span>
+    </div>
+    <textarea id="noteInput" placeholder="打开这个页面，我想..." rows="2" maxlength="200"></textarea>
+    <div id="actions">
+      <button id="saveBtn">记下目的</button>
+    </div>
+    <div id="feedback"></div>
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

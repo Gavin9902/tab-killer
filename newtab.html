@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tab Killer — 我的传送门</title>
+  <link rel="stylesheet" href="newtab.css">
+</head>
+<body>
+  <div id="app">
+    <header id="header">
+      <h1 id="logo">Tab Killer</h1>
+      <div id="headerRight">
+        <span id="tabCount"></span>
+      </div>
+    </header>
+
+    <section id="hero">
+      <div id="searchWrapper">
+        <svg id="searchIcon" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+        <input id="searchInput" type="text" placeholder="你想找什么？描述你对那个页面的印象..." autofocus autocomplete="off" />
+        <button id="clearSearch" class="hidden" title="清除搜索">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <line x1="18" y1="6" x2="6" y2="18"></line>
+            <line x1="6" y1="6" x2="18" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </section>
+
+    <nav id="filters">
+      <button class="filter-btn active" data-filter="all">全部</button>
+      <button class="filter-btn" data-filter="today">今天</button>
+      <button class="filter-btn" data-filter="yesterday">昨天</button>
+      <button class="filter-btn" data-filter="week">本周</button>
+      <button class="filter-btn" data-filter="older">更早</button>
+    </nav>
+
+    <section id="results">
+      <div id="cardGrid"></div>
+      <div id="noResults" class="state-message hidden">
+        <div class="state-icon">--</div>
+        <p class="state-title">没找到匹配的页面</p>
+        <p class="state-desc">试试换一个描述方式，或者</p>
+        <a id="googleLink" href="#" target="_blank" rel="noopener">在 Google 搜索</a>
+      </div>
+      <div id="emptyState" class="state-message hidden">
+        <div class="state-icon">--</div>
+        <p class="state-title">还没有归档的标签页</p>
+        <p class="state-desc">Tab Killer 正在后台运行。当你 10 小时没碰一个标签页时，它会自动归档到这里。<br>你也可以现在就去工具栏弹窗里，随手记下某个页面的目的。</p>
+      </div>
+    </section>
+  </div>
+
+  <script src="newtab.js"></script>
+</body>
+</html>

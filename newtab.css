@@ -1,0 +1,458 @@
+/* ===== Reset & Base ===== */
+*, *::before, *::after {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #f8f7f4;
+  --card-bg: #ffffff;
+  --card-border: #e8e6e1;
+  --card-hover-shadow: 0 2px 16px rgba(0,0,0,0.06);
+  --text: #1a1a1a;
+  --text-secondary: #787774;
+  --text-tertiary: #9b9a97;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --border: #e8e6e1;
+  --input-bg: #ffffff;
+  --input-focus-shadow: 0 0 0 3px rgba(37,99,235,0.12);
+  --filter-bg: #f0efe9;
+  --filter-active-bg: #1a1a1a;
+  --filter-active-text: #ffffff;
+  --note-bg: #f9f8f5;
+  --note-border: #ebe9e3;
+  --restore-bg: #f0efe9;
+  --restore-hover-bg: #e5e3dc;
+  --header-border: #e8e6e1;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #191919;
+    --card-bg: #242424;
+    --card-border: #333333;
+    --card-hover-shadow: 0 2px 16px rgba(0,0,0,0.3);
+    --text: #e5e5e5;
+    --text-secondary: #a3a3a3;
+    --text-tertiary: #737373;
+    --accent: #60a5fa;
+    --accent-hover: #93bbfd;
+    --border: #333333;
+    --input-bg: #2a2a2a;
+    --input-focus-shadow: 0 0 0 3px rgba(96,165,250,0.15);
+    --filter-bg: #2a2a2a;
+    --filter-active-bg: #e5e5e5;
+    --filter-active-text: #1a1a1a;
+    --note-bg: #2a2a2a;
+    --note-border: #333333;
+    --restore-bg: #2a2a2a;
+    --restore-hover-bg: #333333;
+    --header-border: #333333;
+  }
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+#app {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 24px 80px;
+}
+
+/* ===== Header ===== */
+#header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-bottom: 16px;
+  margin-bottom: 32px;
+  border-bottom: 1px solid var(--header-border);
+}
+
+#logo {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text);
+  letter-spacing: -0.01em;
+}
+
+#headerRight {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+#tabCount {
+  font-size: 12px;
+  color: var(--text-tertiary);
+}
+
+/* ===== Hero / Search ===== */
+#hero {
+  margin-bottom: 20px;
+}
+
+#searchWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  background: var(--input-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 0 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+#searchWrapper:focus-within {
+  border-color: var(--accent);
+  box-shadow: var(--input-focus-shadow);
+}
+
+#searchIcon {
+  color: var(--text-tertiary);
+  flex-shrink: 0;
+  margin-right: 10px;
+}
+
+#searchInput {
+  flex: 1;
+  padding: 16px 0;
+  border: none;
+  background: transparent;
+  font-size: 18px;
+  font-family: inherit;
+  color: var(--text);
+  outline: none;
+}
+
+#searchInput::placeholder {
+  color: var(--text-tertiary);
+}
+
+#clearSearch {
+  flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border: none;
+  background: none;
+  cursor: pointer;
+  color: var(--text-tertiary);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s;
+}
+
+#clearSearch:hover {
+  background: var(--filter-bg);
+}
+
+#clearSearch.hidden {
+  display: none;
+}
+
+/* ===== Filters ===== */
+#filters {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 28px;
+}
+
+.filter-btn {
+  padding: 5px 14px;
+  border: none;
+  border-radius: 16px;
+  background: var(--filter-bg);
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.filter-btn:hover {
+  color: var(--text);
+}
+
+.filter-btn.active {
+  background: var(--filter-active-bg);
+  color: var(--filter-active-text);
+}
+
+/* ===== Card Grid ===== */
+#cardGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: 14px;
+}
+
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 10px;
+  padding: 16px;
+  cursor: pointer;
+  transition: box-shadow 0.2s, transform 0.15s, border-color 0.15s;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  position: relative;
+}
+
+.card:hover {
+  box-shadow: var(--card-hover-shadow);
+  border-color: transparent;
+  transform: translateY(-1px);
+}
+
+.card-favicon {
+  width: 24px;
+  height: 24px;
+  border-radius: 4px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: var(--filter-bg);
+}
+
+.card-favicon img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+
+.card-favicon .fallback {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-tertiary);
+}
+
+.card-title {
+  font-size: 13px;
+  font-weight: 500;
+  line-height: 1.4;
+  color: var(--text);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  word-break: break-word;
+  flex: 1;
+}
+
+.card-note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  min-height: 17px;
+  padding: 4px 6px;
+  margin: 0 -6px;
+  border-radius: 4px;
+  background: var(--note-bg);
+  border: 1px dashed transparent;
+  cursor: text;
+  transition: border-color 0.15s;
+}
+
+.card-note:empty::before {
+  content: "点击添加备注...";
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
+.card-note:hover {
+  border-color: var(--note-border);
+}
+
+.card-note.editing {
+  border-color: var(--accent);
+  background: var(--card-bg);
+  outline: none;
+  cursor: text;
+}
+
+.card-note.editing:empty::before {
+  content: "";
+}
+
+.card-title mark,
+.card-note mark {
+  background: #fef08a;
+  color: inherit;
+  border-radius: 2px;
+  padding: 0 1px;
+}
+
+@media (prefers-color-scheme: dark) {
+  .card-title mark,
+  .card-note mark {
+    background: #854d0e;
+    color: #fef9c3;
+  }
+}
+
+.card-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-time {
+  font-size: 11px;
+  color: var(--text-tertiary);
+}
+
+.card-domain {
+  font-size: 10px;
+  color: var(--text-tertiary);
+  flex: 1;
+  margin: 0 8px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card-restore {
+  padding: 4px 10px;
+  border: none;
+  border-radius: 5px;
+  background: var(--restore-bg);
+  color: var(--text-secondary);
+  font-size: 11px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+  opacity: 0;
+}
+
+.card:hover .card-restore {
+  opacity: 1;
+}
+
+.card-restore:hover {
+  background: var(--accent);
+  color: #fff;
+}
+
+/* ===== State Messages ===== */
+.state-message {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.state-message.hidden {
+  display: none;
+}
+
+.state-icon {
+  font-size: 32px;
+  color: var(--text-tertiary);
+  margin-bottom: 16px;
+}
+
+.state-title {
+  font-size: 16px;
+  font-weight: 500;
+  color: var(--text);
+  margin-bottom: 8px;
+}
+
+.state-desc {
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  max-width: 360px;
+  margin: 0 auto 16px;
+}
+
+#googleLink {
+  display: inline-block;
+  padding: 8px 20px;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  font-size: 13px;
+  text-decoration: none;
+  transition: background 0.15s;
+}
+
+#googleLink:hover {
+  background: var(--accent-hover);
+}
+
+/* ===== Loading Spinner ===== */
+#loadingSpinner {
+  width: 24px;
+  height: 24px;
+  border: 2px solid var(--border);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin: 0 auto 16px;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+  #app {
+    padding: 20px 16px 60px;
+  }
+
+  #searchInput {
+    font-size: 16px;
+    padding: 14px 0;
+  }
+
+  #cardGrid {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 10px;
+  }
+
+  .card {
+    padding: 12px;
+  }
+
+  .card-title {
+    font-size: 12px;
+  }
+}
+
+@media (max-width: 480px) {
+  #cardGrid {
+    grid-template-columns: 1fr;
+  }
+
+  #logo {
+    font-size: 14px;
+  }
+
+  #filters {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+
+  .filter-btn {
+    padding: 4px 10px;
+    font-size: 12px;
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "manifest_version": 3,
+  "name": "Tab Killer",
+  "version": "1.0.0",
+  "description": "自动归档不活跃标签页，释放内存。用自然语言搜索找回你需要的页面。",
+  "permissions": ["tabs", "storage", "alarms"],
+  "background": {
+    "service_worker": "service-worker.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "记录此页面的目的"
+  },
+  "chrome_url_overrides": {
+    "newtab": "newtab.html"
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
