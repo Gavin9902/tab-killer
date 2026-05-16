@@ -1,65 +1,50 @@
+[中文](README.md) · [English](README.en.md)
+
 # Tab Killer
 
 自动归档不活跃标签页，释放浏览器内存。用自然语言搜索找回你需要的页面。
 
-A Chrome extension that automatically archives inactive tabs to free memory. Search and restore them with natural language.
+![](screenshot.png)
 
----
+## 功能
 
-## 中文
+### 自动归档
+- **30 分钟无活跃** → 自动 discard（冻结内存，标签页保留在标签栏，点击重新加载）
+- **10 小时无活跃** → 自动归档（保存页面信息后关闭标签页，展示到新标签页）
+- **重复标签页检测** → 每 10 分钟扫描，自动关闭重复 URL（保留最近活跃的那个）
 
-### 它做什么
+### 新标签页即传送门
+- **域名 Tile 画廊** — 按根域名分组，`api.xxx.com` 和 `chat.xxx.com` 自动归到一个 tile 下；tile 宽度随域名长度自适应
+- **Hover 展开** — tile 弹簧放大 1.28x，弹出该域名下页面列表面板；底部缓冲区域防误触脱离热区
+- **圆点计数** — tile 内图标底部灰点表示页面数量，最多 5 点 + 溢出数字（如 +3），无红点焦虑
+- **单页直达** — 域名下仅 1 个页面时，点击 tile 直接恢复打开，无需展开面板
+- **视图切换** — 站点模式（tile 画廊）↔ 列表模式（多列卡片网格），一键切换
+- **最近横滚条** — 顶部胶囊横滚条展示最近 12 篇归档，快速扫到新鲜内容
+- **AI 风格搜索** — 大号输入框，中文分词 + 关键词高亮 + 时间衰减评分，像对话一样搜索
+- **时间筛选** — 全部 / 今天 / 昨天 / 本周 / 更早
 
-- **30 分钟无活跃** → 自动 discard（释放该标签页占用的内存，标签页保留在标签栏，点击重新加载）
-- **10 小时无活跃** → 自动归档（保存页面信息后关闭标签页，在新标签页中以卡片形式展示）
-- **重复标签页检测** → 每 10 分钟检查一次，自动关闭重复的标签页（保留最近活跃的那个）
-- **新标签页即传送门** → 打开新标签页，搜索任意关键词即可找回被归档的页面。支持中文分词、拼音模糊匹配、时间筛选
-- **记录页面目的** → 点击工具栏图标，给当前页面写一句话备注（"这个留着，周末要看"），归档后备注会显示在卡片上，方便回忆
+### 删除管理
+- **页面级删除** — 卡片 hover 时右上角 ×，删单条
+- **域名级删除** — tile hover 时右上角灰 ×，hover 变红，确认后删整个站点所有归档
 
-### 安装
+### Sidebar（点击工具栏图标）
+- **记下目的** — 给当前页面写一句备注，Enter 即保存
+- **双向同步** — 新标签页里编辑笔记 ↔ sidebar 打开实时看到
+- **快捷入口** — 底部卡片式按钮跳转归档页面，展示 ⌘T 快捷键
+
+### 设计
+- **本地优先** — 所有数据存 Chrome Storage Local，不上传任何信息
+- **零配置** — 装好即用，没有设置项、通知弹窗、badge
+- **暗色模式** — 自动跟随系统
+- **Anthropic 风格** — 暖色调、弹性动画、安静克制
+
+## 安装
 
 1. 克隆仓库或下载源码
 2. 打开 Chrome，进入 `chrome://extensions/`
 3. 开启右上角「开发者模式」
 4. 点击「加载已解压的扩展程序」，选择项目目录
 
-### 设计理念
+## 技术栈
 
-- **零配置**：装好即用，没有任何设置项
-- **不打扰**：没有通知弹窗，没有 badges，只在后台默默工作
-- **本地优先**：所有数据存储在 Chrome Storage Local，不上传任何信息
-- **搜索优先**：新标签页就是搜索引擎，你不需要记住 URL，描述印象即可
-
-### 技术栈
-
-Manifest V3 · Service Worker · Chrome Storage · Vanilla JS
-
----
-
-## English
-
-### What It Does
-
-- **30 min idle** → auto discard (frees the tab's memory while keeping it in the tab bar; click to reload)
-- **10 hours idle** → auto archive (saves page info, closes the tab, shows it as a card on the new tab page)
-- **Duplicate detection** → checks every 10 minutes, auto-closes duplicate tabs (keeps the most recently active one)
-- **New tab is your portal** → open a new tab, search with any keywords to find archived pages. Supports tokenized search with relevance scoring and time-based filters
-- **Note-taking** → click the toolbar icon to jot down why you kept a page ("read this weekend"). Notes appear on archive cards
-
-### Install
-
-1. Clone the repo or download the source
-2. Open Chrome, go to `chrome://extensions/`
-3. Enable "Developer mode" (top right)
-4. Click "Load unpacked" and select the project folder
-
-### Philosophy
-
-- **Zero config** — install and forget
-- **No interruptions** — no notifications, no badges, just silent background work
-- **Local first** — all data in Chrome Storage Local, nothing leaves your machine
-- **Search-first** — the new tab page is your search engine. Describe what you remember, don't memorize URLs
-
-### Tech Stack
-
-Manifest V3 · Service Worker · Chrome Storage · Vanilla JS
+Manifest V3 · Service Worker · Chrome Storage · Vanilla JS · CSS Custom Properties
