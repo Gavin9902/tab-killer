@@ -351,64 +351,57 @@ body {
   color: #fff;
 }
 
-/* ===== Domain Spheres ===== */
+/* ===== Domain Tiles ===== */
 #cardGrid.grouped {
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
-  gap: 24px 20px;
+  gap: 20px 16px;
   padding: 12px 0;
 }
 
 .domain-sphere {
   width: var(--sphere-size);
-  height: var(--sphere-size);
   position: relative;
   z-index: 1;
 }
 
 .sphere-face {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 35%, #ffffff, #f5f2eb 70%, #ebe6da);
-  border: 1px solid #e8e3d6;
-  box-shadow:
-    0 2px 8px rgba(0,0,0,0.04),
-    0 8px 24px rgba(0,0,0,0.03),
-    inset 0 1px 0 rgba(255,255,255,0.8);
+  width: var(--sphere-size);
+  height: var(--sphere-size);
+  border-radius: 18px;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  box-shadow: 0 1px 4px rgba(0,0,0,0.04);
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 4px;
+  gap: 6px;
+  padding: 14px 10px 10px;
   cursor: pointer;
+  position: relative;
   transition: transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1),
-              box-shadow 0.35s ease,
-              border-color 0.35s ease;
+              box-shadow 0.35s ease;
   user-select: none;
 }
 
 .sphere-face:hover {
-  transform: scale(1.08);
-  box-shadow:
-    0 4px 16px rgba(0,0,0,0.08),
-    0 12px 32px rgba(0,0,0,0.04),
-    inset 0 1px 0 rgba(255,255,255,0.8);
-  border-color: #d4cbb8;
+  transform: scale(1.1);
+  box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+  z-index: 2;
 }
 
 .sphere-icon {
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
+  width: calc(var(--sphere-size) - 36px);
+  height: calc(var(--sphere-size) - 36px);
+  border-radius: 12px;
   overflow: hidden;
   flex-shrink: 0;
   background: #f8f7f4;
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.06);
 }
 
 .sphere-icon img {
@@ -418,25 +411,39 @@ body {
 }
 
 .sphere-icon .sphere-fallback {
-  font-size: 14px;
+  font-size: 28px;
   font-weight: 600;
-  color: #b8b2a6;
+  color: #c5c0b6;
+  text-transform: uppercase;
 }
 
 .sphere-domain {
   font-size: 10px;
-  color: #8c8680;
-  max-width: calc(var(--sphere-size) - 16px);
+  color: var(--text-tertiary);
+  max-width: calc(var(--sphere-size) - 8px);
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  line-height: 1;
 }
 
 .sphere-count {
-  font-size: 18px;
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 5px;
+  background: #ef4444;
+  color: #fff;
+  font-size: 11px;
   font-weight: 600;
-  color: #5c5650;
-  line-height: 1;
+  line-height: 20px;
+  text-align: center;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(239,68,68,0.35);
+  pointer-events: none;
+  z-index: 3;
 }
 
 /* Panel */
@@ -534,37 +541,12 @@ body {
 }
 
 @media (prefers-color-scheme: dark) {
-  .sphere-face {
-    background: radial-gradient(circle at 35% 35%, #3a3a3a, #2a2a2a 70%, #1e1e1e);
-    border-color: #333;
-    box-shadow:
-      0 2px 8px rgba(0,0,0,0.3),
-      0 8px 24px rgba(0,0,0,0.2),
-      inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
-  .sphere-face:hover {
-    border-color: #555;
-    box-shadow:
-      0 4px 16px rgba(0,0,0,0.4),
-      0 12px 32px rgba(0,0,0,0.3),
-      inset 0 1px 0 rgba(255,255,255,0.05);
-  }
-
   .sphere-icon {
     background: #2a2a2a;
   }
 
   .sphere-icon .sphere-fallback {
-    color: #666;
-  }
-
-  .sphere-domain {
-    color: #888;
-  }
-
-  .sphere-count {
-    color: #bbb;
+    color: #555;
   }
 
   .panel-cards .card:hover {

@@ -187,9 +187,9 @@ function groupByDomain(tabs) {
 }
 
 function sphereSize(count) {
-  if (count >= 10) return 130;
-  if (count >= 6) return 110;
-  if (count >= 3) return 95;
+  if (count >= 10) return 120;
+  if (count >= 6) return 104;
+  if (count >= 3) return 90;
   return 80;
 }
 
