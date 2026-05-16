@@ -263,11 +263,11 @@ function groupByDomain(tabs) {
   return sorted;
 }
 
-function sphereSize(count) {
-  if (count >= 10) return 130;
-  if (count >= 6) return 114;
-  if (count >= 3) return 100;
-  return 90;
+function sphereSize(count, domain) {
+  const base = count >= 10 ? 130 : count >= 6 ? 114 : count >= 3 ? 100 : 90;
+  const chars = domain.length;
+  if (chars <= 12) return base;
+  return Math.min(base + (chars - 12) * 5, 200);
 }
 
 function renderGrouped(tabs) {
@@ -275,7 +275,7 @@ function renderGrouped(tabs) {
   cardGrid.className = 'grouped';
 
   cardGrid.innerHTML = groups.map(([domain, domainTabs]) => {
-    const size = sphereSize(domainTabs.length);
+    const size = sphereSize(domainTabs.length, domain);
     const singleUrl = domainTabs.length === 1 ? escapeAttr(domainTabs[0].url) : '';
     const faviconHtml = domainTabs[0].favIconUrl
       ? `<img src="${escapeAttr(domainTabs[0].favIconUrl)}" alt="" loading="lazy" onerror="this.parentElement.innerHTML='<span class=\\'sphere-fallback\\'>${escapeHtml(domain.charAt(0).toUpperCase())}</span>'" />`

@@ -551,7 +551,8 @@ body {
   color: var(--text-secondary);
   text-align: center;
   line-height: 1.25;
-  width: calc(var(--sphere-size) - 4px);
+  padding: 0 4px;
+  width: 100%;
   display: -webkit-box;
   -webkit-line-clamp: 2;
   -webkit-box-orient: vertical;
