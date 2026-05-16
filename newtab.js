@@ -72,6 +72,18 @@ async function saveArchivedTabs() {
   updateTabCount();
 }
 
+async function deleteArchivedTab(id) {
+  archivedTabs = archivedTabs.filter(t => t.id !== id);
+  await saveArchivedTabs();
+  render();
+}
+
+async function deleteArchivedTabsByDomain(domain) {
+  archivedTabs = archivedTabs.filter(t => getRootDomain(t.url) !== domain);
+  await saveArchivedTabs();
+  render();
+}
+
 // ===== 搜索 =====
 function onSearchInput() {
   clearTimeout(debounceTimer);
@@ -274,10 +286,11 @@ function renderGrouped(tabs) {
     const overflow = domainTabs.length > 5 ? `<span class="sphere-overflow">+${domainTabs.length - 5}</span>` : '';
 
     const cardsHtml = domainTabs.map(tab => `
-        <div class="panel-card" data-url="${escapeAttr(tab.url)}">
+        <div class="panel-card" data-url="${escapeAttr(tab.url)}" data-id="${escapeAttr(tab.id)}">
           <span class="panel-card-title" title="${escapeAttr(tab.title)}">${escapeHtml(tab.title)}</span>
           <span class="panel-card-time">${formatRelativeTime(tab.archivedAt)}</span>
           <button class="panel-card-restore" data-url="${escapeAttr(tab.url)}">恢复</button>
+          <button class="panel-card-delete" data-id="${escapeAttr(tab.id)}" title="删除">×</button>
         </div>`).join('');
 
     const singleClass = domainTabs.length === 1 ? ' is-single' : '';
@@ -285,6 +298,7 @@ function renderGrouped(tabs) {
     return `
       <div class="domain-sphere${singleClass}" style="--sphere-size: ${size}px" data-domain="${escapeAttr(domain)}" data-single-url="${singleUrl}">
         <div class="sphere-face">
+          <button class="sphere-delete" data-domain="${escapeAttr(domain)}" title="删除此站点所有归档">×</button>
           <div class="sphere-dots">${dotsHtml}${overflow}</div>
           <div class="sphere-icon">${faviconHtml}</div>
           <span class="sphere-domain">${escapeHtml(domain)}</span>
@@ -320,8 +334,24 @@ function renderGrouped(tabs) {
   // 面板行点击恢复
   cardGrid.querySelectorAll('.panel-card').forEach(row => {
     row.addEventListener('click', (e) => {
-      if (e.target.closest('.panel-card-restore')) return;
+      if (e.target.closest('.panel-card-restore') || e.target.closest('.panel-card-delete')) return;
       restoreTab(row.dataset.url);
+    });
+  });
+
+  // 页面级删除
+  cardGrid.querySelectorAll('.panel-card-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteArchivedTab(btn.dataset.id);
+    });
+  });
+
+  // 域名级删除
+  cardGrid.querySelectorAll('.sphere-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteArchivedTabsByDomain(btn.dataset.domain);
     });
   });
 }
@@ -343,6 +373,7 @@ function renderCards(tabs) {
 
     return `
       <div class="card" data-id="${escapeAttr(tab.id)}" data-url="${escapeAttr(tab.url)}">
+        <button class="card-delete" data-id="${escapeAttr(tab.id)}" title="删除">×</button>
         <div class="card-favicon">${faviconHtml}</div>
         <div class="card-title" title="${escapeAttr(tab.title)}">${titleHtml}</div>
         <div class="card-note" contenteditable="false" data-tab-id="${escapeAttr(tab.id)}">${noteHtml}</div>
@@ -357,7 +388,7 @@ function renderCards(tabs) {
   // 卡片点击恢复
   cardGrid.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-note') || e.target.closest('.card-restore')) return;
+      if (e.target.closest('.card-note') || e.target.closest('.card-restore') || e.target.closest('.card-delete')) return;
       restoreTab(card.dataset.url);
     });
   });
@@ -367,6 +398,14 @@ function renderCards(tabs) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       restoreTab(btn.dataset.url);
+    });
+  });
+
+  // 页面卡片删除
+  cardGrid.querySelectorAll('.card-delete').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      deleteArchivedTab(btn.dataset.id);
     });
   });
 }

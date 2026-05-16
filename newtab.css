@@ -64,7 +64,10 @@ body {
 #app {
   max-width: 1100px;
   margin: 0 auto;
-  padding: 32px 24px 80px;
+  padding: 32px 24px 0;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
 /* ===== Header ===== */
@@ -78,10 +81,10 @@ body {
 }
 
 #logo {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 22px;
+  font-weight: 700;
   color: var(--text);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
 }
 
 #headerRight {
@@ -201,39 +204,50 @@ body {
   flex-shrink: 0;
 }
 
-/* ===== Hero / Search ===== */
-#hero {
-  margin-bottom: 20px;
+/* ===== Results ===== */
+#results {
+  flex: 1;
+}
+
+/* ===== Search Bar (Bottom, AI-style) ===== */
+#searchBar {
+  position: sticky;
+  bottom: 0;
+  background: linear-gradient(to top, var(--bg) 60%, transparent);
+  padding: 24px 0 32px;
+  margin-top: 40px;
 }
 
 #searchWrapper {
   position: relative;
   display: flex;
   align-items: center;
-  background: var(--input-bg);
-  border: 1px solid var(--border);
-  border-radius: 12px;
-  padding: 0 16px;
-  transition: border-color 0.15s, box-shadow 0.15s;
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 16px;
+  padding: 0 18px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.06);
+  transition: border-color 0.2s, box-shadow 0.2s;
 }
 
 #searchWrapper:focus-within {
   border-color: var(--accent);
-  box-shadow: var(--input-focus-shadow);
+  box-shadow: 0 4px 28px rgba(37,99,235,0.12);
 }
 
 #searchIcon {
   color: var(--text-tertiary);
   flex-shrink: 0;
-  margin-right: 10px;
+  margin-right: 12px;
+  opacity: 0.6;
 }
 
 #searchInput {
   flex: 1;
-  padding: 16px 0;
+  padding: 20px 0;
   border: none;
   background: transparent;
-  font-size: 18px;
+  font-size: 20px;
   font-family: inherit;
   color: var(--text);
   outline: none;
@@ -245,10 +259,10 @@ body {
 
 #clearSearch {
   flex-shrink: 0;
-  width: 28px;
-  height: 28px;
+  width: 32px;
+  height: 32px;
   border: none;
-  background: none;
+  background: var(--filter-bg);
   cursor: pointer;
   color: var(--text-tertiary);
   border-radius: 50%;
@@ -259,7 +273,7 @@ body {
 }
 
 #clearSearch:hover {
-  background: var(--filter-bg);
+  background: var(--card-border);
 }
 
 #clearSearch.hidden {
@@ -307,6 +321,7 @@ body {
   border-radius: 10px;
   padding: 16px;
   cursor: pointer;
+  position: relative;
   transition: box-shadow 0.2s, transform 0.15s, border-color 0.15s;
   display: flex;
   flex-direction: column;
@@ -786,6 +801,92 @@ body {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* ===== Delete Buttons ===== */
+.sphere-delete {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  width: 22px;
+  height: 22px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.05);
+  color: var(--text-tertiary);
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s;
+  z-index: 4;
+}
+
+.sphere-face:hover .sphere-delete {
+  opacity: 1;
+}
+
+.sphere-delete:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+.panel-card-delete {
+  width: 24px;
+  height: 24px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--text-tertiary);
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.panel-card:hover .panel-card-delete {
+  opacity: 1;
+}
+
+.panel-card-delete:hover {
+  background: #ef4444;
+  color: #fff;
+}
+
+/* List view card delete */
+.card-delete {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 20px;
+  height: 20px;
+  border: none;
+  border-radius: 50%;
+  background: rgba(0,0,0,0.04);
+  color: var(--text-tertiary);
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.15s, background 0.15s, color 0.15s;
+  z-index: 2;
+}
+
+.card:hover .card-delete {
+  opacity: 1;
+}
+
+.card-delete:hover {
+  background: #ef4444;
+  color: #fff;
 }
 
 /* ===== Responsive ===== */
