@@ -49,8 +49,7 @@ async function init() {
     }
   });
 
-  document.getElementById('portalLink').addEventListener('click', (e) => {
-    e.preventDefault();
+  document.getElementById('portalLink').addEventListener('click', () => {
     chrome.tabs.create({});
   });
 }
