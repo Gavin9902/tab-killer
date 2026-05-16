@@ -361,6 +361,14 @@ async function saveWatchedTab(tabInfo, note) {
     tabs.push(watched);
   }
   await chrome.storage.local.set({ watchedTabs: tabs });
+
+  // 同步更新已归档的同 URL 卡片
+  const archived = await getArchivedTabs();
+  const archivedIdx = archived.findIndex(t => normalizeUrl(t.url) === normalizeUrl(tabInfo.url));
+  if (archivedIdx >= 0) {
+    archived[archivedIdx].note = note;
+    await chrome.storage.local.set({ archivedTabs: archived });
+  }
 }
 
 async function getCurrentTabInfo() {
