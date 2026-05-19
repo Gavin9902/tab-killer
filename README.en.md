@@ -4,21 +4,25 @@
 
 A Chrome extension that automatically archives inactive tabs to free memory. Search and restore them with natural language.
 
-![](screenshot.png)
+![Tile gallery: site cards grouped by domain, with search bar on top](screenshots/tile-gallery.png)
 
 ## Features
 
 ### Auto Archive
-- **30 min idle** → auto discard (frees memory, tab stays in the tab bar; click to reload)
-- **10 hours idle** → auto archive (saves page info, closes the tab, shows it as a card on the new tab page)
+- **Idle timeout** → auto discard (frees memory, tab stays in the tab bar)
+- **Extended idle** → auto archive (saves page info, closes the tab, shows it as a card; thresholds are configurable)
 - **Duplicate detection** → scans every 10 minutes, auto-closes duplicate URLs (keeps the most recently active one)
 
 ### New Tab is Your Portal
 - **Domain tile gallery** — grouped by root domain (`api.xxx.com` and `chat.xxx.com` merge into one tile); tile width adapts to domain name length
 - **Hover to expand** — tile springs up 1.28x, panel slides out with the domain's page list; bottom buffer prevents accidental dismiss when moving the mouse
+
+![Hover to reveal domain detail panel](screenshots/hover-panel.png)
 - **Dot indicators** — subtle gray dots at the bottom of each tile icon show page count, max 5 dots + overflow number (e.g. +3), no notification anxiety
 - **Single-page shortcut** — if a domain has only one page, clicking the tile opens it directly
 - **View toggle** — site mode (tile gallery) ↔ list mode (multi-column card grid)
+
+![List view: multi-column card grid with time filters](screenshots/list-view.png)
 - **Recent scroll bar** — horizontal pill-shaped scroll strip at the top shows the 12 most recently archived pages
 - **AI-style search** — large input with tokenized search, keyword highlighting, and time-decay relevance scoring
 - **Time filters** — All / Today / Yesterday / This Week / Older
@@ -34,7 +38,9 @@ A Chrome extension that automatically archives inactive tabs to free memory. Sea
 
 ### Design
 - **Local first** — all data in Chrome Storage Local, nothing leaves your machine
-- **Zero config** — install and forget. No settings, no notifications, no badges
+- **Tunable thresholds** — click the gear icon to set custom discard / archive timeouts
+
+![Settings panel: customize discard and archive timeouts](screenshots/settings-panel.png)
 - **Dark mode** — follows system preference automatically
 - **Anthropic aesthetic** — warm tones, spring animations, quiet and restrained
 
