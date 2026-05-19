@@ -13,6 +13,12 @@ const filterBtns = document.querySelectorAll('.filter-btn');
 const viewBtns = document.querySelectorAll('.view-btn');
 const recentScroll = document.getElementById('recentScroll');
 const recentTrack = document.getElementById('recentTrack');
+const settingsBtn = document.getElementById('settingsBtn');
+const settingsPanel = document.getElementById('settingsPanel');
+const settingsOverlay = document.getElementById('settingsOverlay');
+const settingsClose = document.getElementById('settingsClose');
+const settingDiscard = document.getElementById('settingDiscard');
+const settingArchive = document.getElementById('settingArchive');
 
 // ===== 状态 =====
 let archivedTabs = [];
@@ -26,7 +32,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   setupEventListeners();
-  await loadArchivedTabs();
+  await Promise.all([loadArchivedTabs(), loadSettings()]);
   render();
 }
 
@@ -51,6 +57,12 @@ function setupEventListeners() {
       render();
     });
   });
+
+  settingsBtn.addEventListener('click', openSettings);
+  settingsClose.addEventListener('click', closeSettings);
+  settingsOverlay.addEventListener('click', closeSettings);
+  settingDiscard.addEventListener('change', saveSettings);
+  settingArchive.addEventListener('change', saveSettings);
 
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.archivedTabs) {
@@ -344,6 +356,41 @@ function renderGrouped(tabs) {
       deleteArchivedTabsByDomain(btn.dataset.domain);
     });
   });
+
+  // 面板 hover 防溢出
+  cardGrid.querySelectorAll('.domain-sphere').forEach(sphere => {
+    sphere.addEventListener('mouseenter', constrainPanel);
+    sphere.addEventListener('mouseleave', resetPanel);
+  });
+}
+
+function constrainPanel(e) {
+  const sphere = e.currentTarget;
+  const panel = sphere.querySelector('.sphere-panel');
+  if (!panel) return;
+
+  requestAnimationFrame(() => {
+    const rect = panel.getBoundingClientRect();
+    const vw = window.innerWidth;
+    let dx = 0;
+
+    if (rect.left < 16) {
+      dx = 16 - rect.left;
+    } else if (rect.right > vw - 16) {
+      dx = vw - 16 - rect.right;
+    }
+
+    if (dx !== 0) {
+      panel.style.setProperty('--panel-shift', `${dx}px`);
+    }
+  });
+}
+
+function resetPanel(e) {
+  const panel = e.currentTarget.querySelector('.sphere-panel');
+  if (panel) {
+    panel.style.removeProperty('--panel-shift');
+  }
 }
 
 function renderCards(tabs) {
@@ -620,4 +667,38 @@ function escapeHtml(str) {
 
 function escapeAttr(str) {
   return str.replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+}
+
+// ===== 设置面板 =====
+async function loadSettings() {
+  const data = await chrome.storage.local.get('config');
+  const cfg = data.config || {};
+  settingDiscard.value = Math.round((cfg.discardTimeoutMs || 30 * 60 * 1000) / 60000);
+  settingArchive.value = Math.round((cfg.archiveTimeoutMs || 10 * 60 * 1000) / 60000);
+}
+
+function openSettings() {
+  settingsPanel.classList.remove('hidden');
+  settingsOverlay.classList.remove('hidden');
+}
+
+function closeSettings() {
+  settingsPanel.classList.add('hidden');
+  settingsOverlay.classList.add('hidden');
+}
+
+async function saveSettings() {
+  const discardVal = parseInt(settingDiscard.value, 10);
+  const archiveVal = parseInt(settingArchive.value, 10);
+  if (isNaN(discardVal) || discardVal < 1) { settingDiscard.value = 30; return; }
+  if (isNaN(archiveVal) || archiveVal < 1) { settingArchive.value = 10; return; }
+
+  const newConfig = {
+    discardTimeoutMs: discardVal * 60 * 1000,
+    archiveTimeoutMs: archiveVal * 60 * 1000,
+  };
+
+  await chrome.storage.local.set({ config: newConfig });
+  // 通知 service worker
+  chrome.runtime.sendMessage({ type: 'setConfig', config: newConfig });
 }

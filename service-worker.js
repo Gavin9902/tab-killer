@@ -1,8 +1,11 @@
-// ===== 配置 =====
-const DISCARD_TIMEOUT_MS = 30 * 60 * 1000;
-const ARCHIVE_TIMEOUT_MS = 5 * 60 * 1000;
-const CHECK_INTERVAL_MINUTES = 1;
-const DUPLICATE_CHECK_INTERVAL_MINUTES = 10;
+// ===== 配置（默认值，可从 storage 覆盖） =====
+const DEFAULT_CONFIG = {
+  discardTimeoutMs: 30 * 60 * 1000,
+  archiveTimeoutMs: 10 * 60 * 1000,
+  checkIntervalMinutes: 1,
+  duplicateCheckIntervalMinutes: 10,
+};
+let config = { ...DEFAULT_CONFIG };
 const SESSION_SYNC_DEBOUNCE_MS = 2000;
 
 // ===== 状态（内存缓存，session storage 持久化） =====
@@ -12,11 +15,18 @@ let activityLoaded = false;
 
 // ===== 初始化 =====
 async function init() {
-  await loadActivityFromSession();
+  await Promise.all([loadActivityFromSession(), loadConfig()]);
   chrome.sidePanel.setPanelBehavior({ openPanelOnActionClick: true });
-  chrome.alarms.create('tabCheck', { periodInMinutes: CHECK_INTERVAL_MINUTES });
-  chrome.alarms.create('duplicateCheck', { periodInMinutes: DUPLICATE_CHECK_INTERVAL_MINUTES });
+  chrome.alarms.create('tabCheck', { periodInMinutes: config.checkIntervalMinutes });
+  chrome.alarms.create('duplicateCheck', { periodInMinutes: config.duplicateCheckIntervalMinutes });
   chrome.alarms.create('firstRun', { delayInMinutes: 0 });
+
+  // 监听配置变更
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.config) {
+      config = { ...DEFAULT_CONFIG, ...changes.config.newValue };
+    }
+  });
 }
 
 // 从 session storage 恢复或从当前标签页初始化
@@ -167,10 +177,13 @@ async function processInactiveTabs() {
     info.audible = tab.audible || false;
     info.groupId = tab.groupId;
 
+    // 当前活动标签页不自动关闭
+    if (tab.active) continue;
+
     const inactiveTime = now - info.lastActive;
 
-    // 第一级：30 分钟无活跃 → discard
-    if (inactiveTime >= DISCARD_TIMEOUT_MS && !isExemptFromDiscard(info)) {
+    // 第一级：discard 超时 → discard
+    if (inactiveTime >= config.discardTimeoutMs && !isExemptFromDiscard(info)) {
       try {
         await chrome.tabs.discard(tab.id);
       } catch (e) {
@@ -178,8 +191,8 @@ async function processInactiveTabs() {
       }
     }
 
-    // 第二级：10 小时无活跃 → 归档并关闭
-    if (inactiveTime >= ARCHIVE_TIMEOUT_MS && !isExemptFromArchive(info)) {
+    // 第二级：归档超时 → 归档并关闭
+    if (inactiveTime >= config.archiveTimeoutMs && !isExemptFromArchive(info)) {
       await archiveAndClose(tab.id, info);
     }
   }
@@ -260,6 +273,21 @@ async function archiveAndClose(tabId, info) {
 }
 
 // ===== 存储操作 =====
+async function loadConfig() {
+  try {
+    const data = await chrome.storage.local.get('config');
+    if (data.config) {
+      config = { ...DEFAULT_CONFIG, ...data.config };
+    }
+  } catch {
+    // 使用默认配置
+  }
+}
+
+async function getConfig() {
+  return { ...config };
+}
+
 async function getArchivedTabs() {
   const data = await chrome.storage.local.get('archivedTabs');
   return data.archivedTabs || [];
@@ -341,6 +369,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
   if (message.type === 'getCurrentTabInfo') {
     getCurrentTabInfo().then(sendResponse);
+    return true;
+  }
+  if (message.type === 'getConfig') {
+    sendResponse({ ...config });
+    return true;
+  }
+  if (message.type === 'setConfig') {
+    const newConfig = { ...DEFAULT_CONFIG, ...message.config };
+    chrome.storage.local.set({ config: newConfig });
+    config = newConfig;
+    sendResponse({ success: true });
     return true;
   }
 });

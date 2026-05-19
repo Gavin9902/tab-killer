@@ -570,7 +570,7 @@ body {
   position: absolute;
   top: 100%;
   left: 50%;
-  transform: translateX(-50%) translateY(8px);
+  transform: translateX(calc(-50% + var(--panel-shift, 0px))) translateY(8px);
   margin-top: 10px;
   width: 420px;
   max-width: 90vw;
@@ -844,6 +844,136 @@ body {
 .card-delete:hover {
   background: #ef4444;
   color: #fff;
+}
+
+/* ===== Settings Panel ===== */
+#settingsOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.2);
+  z-index: 999;
+}
+
+#settingsOverlay.hidden {
+  display: none;
+}
+
+#settingsBtn {
+  background: var(--filter-bg);
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: var(--text-secondary);
+  transition: background 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+#settingsBtn:hover {
+  background: var(--card-border);
+  color: var(--text);
+}
+
+#settingsPanel {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: var(--card-bg);
+  border: 1px solid var(--card-border);
+  border-radius: 14px;
+  box-shadow: 0 8px 48px rgba(0,0,0,0.15);
+  z-index: 1000;
+  width: 380px;
+  max-width: calc(100vw - 40px);
+  overflow: hidden;
+}
+
+#settingsPanel.hidden {
+  display: none;
+}
+
+#settingsHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text);
+  border-bottom: 1px solid var(--card-border);
+}
+
+#settingsClose {
+  width: 28px;
+  height: 28px;
+  border: none;
+  border-radius: 50%;
+  background: var(--filter-bg);
+  cursor: pointer;
+  color: var(--text-tertiary);
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.15s, color 0.15s;
+}
+
+#settingsClose:hover {
+  background: var(--card-border);
+  color: var(--text);
+}
+
+#settingsBody {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.setting-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.setting-label {
+  font-size: 12px;
+  color: var(--text-secondary);
+}
+
+.setting-input {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  background: var(--input-bg);
+  color: var(--text);
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+.setting-input:focus {
+  border-color: var(--accent);
+  box-shadow: var(--input-focus-shadow);
+}
+
+#settingsHint {
+  font-size: 11px;
+  color: var(--text-tertiary);
+  text-align: center;
+}
+
+@media (prefers-color-scheme: dark) {
+  #settingsOverlay {
+    background: rgba(0,0,0,0.5);
+  }
 }
 
 /* ===== Responsive ===== */
