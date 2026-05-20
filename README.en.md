@@ -2,7 +2,11 @@
 
 # Tab Killer
 
-A Chrome extension that automatically archives inactive tabs to free memory. Search and restore them with natural language.
+Tabs multiply. Memory vanishes. Your browser crawls. **Tab Killer auto-freezes idle tabs so your machine can breathe again.**
+
+*"I swear I had that page open somewhere…"* — Just describe it in your own words; Tab Killer finds it instantly.
+
+No manual cleanup. No folders. No thinking. Install and forget. **Tabs stay out of your way, but never out of reach.**
 
 ![Tile gallery: site cards grouped by domain, with search bar on top](screenshots/tile-gallery.png)
 
