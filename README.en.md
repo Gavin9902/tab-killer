@@ -35,6 +35,10 @@ No manual cleanup. No folders. No thinking. Install and forget.
 
 ![List view: multi-column card grid with time filters](screenshots/list-view.png)
 
+**Keyword search** — type whatever you remember; tokenized matching + highlighting + time-decay ranking finds closed pages instantly:
+
+![Keyword search: type "api" to find archived pages](screenshots/screenshot-20260520-081227.png)
+
 **Settings** — click the gear icon, adjust timeouts, takes effect immediately:
 
 ![Settings panel: customize discard and archive timeouts](screenshots/settings-panel.png)
