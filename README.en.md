@@ -1,60 +1,89 @@
 [中文](README.md) · [English](README.en.md)
 
-# Tab Killer
+# Tab Killer 🪓
+
+> Tabs stay out of your way, but never out of reach.
 
 Tabs multiply. Memory vanishes. Your browser crawls. **Tab Killer auto-freezes idle tabs so your machine can breathe again.**
 
 *"I swear I had that page open somewhere…"* — Just describe it in your own words; Tab Killer finds it instantly.
 
-No manual cleanup. No folders. No thinking. Install and forget. **Tabs stay out of your way, but never out of reach.**
+No manual cleanup. No folders. No thinking. Install and forget.
 
 ![Tile gallery: site cards grouped by domain, with search bar on top](screenshots/tile-gallery.png)
 
-## Features
+## ✨ What It Does
 
-### Auto Archive
-- **Idle timeout** → auto discard (frees memory, tab stays in the tab bar)
-- **Extended idle** → auto archive (saves page info, closes the tab, shows it as a card; thresholds are configurable)
-- **Duplicate detection** → scans every 10 minutes, auto-closes duplicate URLs (keeps the most recently active one)
+| | |
+|---|---|
+| 🔄 **Auto-Freeze** | Idle tabs get discarded; memory freed. One click to reload. |
+| 📦 **Auto-Archive** | Tabs idle too long get saved and closed. Thresholds adjustable. |
+| 🔍 **Search Like You Talk** | Describe the page in plain words. Tokenized search with keyword highlighting and time-decay ranking finds it fast. |
+| 🗂 **Smart Grouping** | `api.x.com` and `chat.x.com` merge into one domain tile. Width auto-adapts. Zero manual folders. |
+| 🎯 **Dupe Killer** | Duplicate URLs auto-close every 10 minutes. The most recently active one survives. |
+| 📝 **Jot Notes** | Sidebar for capturing "why is this tab open?" Bidirectionally synced to the new tab page. |
+| 🌙 **Dark Mode** | Follows system preference. Warm Anthropic color palette. |
+| 🔒 **100% Local** | Everything in Chrome Storage Local. Nothing leaves your machine. |
 
-### New Tab is Your Portal
-- **Domain tile gallery** — grouped by root domain (`api.xxx.com` and `chat.xxx.com` merge into one tile); tile width adapts to domain name length
-- **Hover to expand** — tile springs up 1.28x, panel slides out with the domain's page list; bottom buffer prevents accidental dismiss when moving the mouse
+## 📸 Screenshots
+
+**Hover to expand** — spring-scale 1.28x, panel reveals all pages under that domain:
 
 ![Hover to reveal domain detail panel](screenshots/hover-panel.png)
-- **Dot indicators** — subtle gray dots at the bottom of each tile icon show page count, max 5 dots + overflow number (e.g. +3), no notification anxiety
-- **Single-page shortcut** — if a domain has only one page, clicking the tile opens it directly
-- **View toggle** — site mode (tile gallery) ↔ list mode (multi-column card grid)
+
+**List view** — toggle to multi-column card grid with time filters:
 
 ![List view: multi-column card grid with time filters](screenshots/list-view.png)
-- **Recent scroll bar** — horizontal pill-shaped scroll strip at the top shows the 12 most recently archived pages
-- **AI-style search** — large input with tokenized search, keyword highlighting, and time-decay relevance scoring
-- **Time filters** — All / Today / Yesterday / This Week / Older
 
-### Delete Management
-- **Page-level delete** — × button appears on card hover, deletes a single entry
-- **Domain-level delete** — × button on tile top-right, appears on hover, turns red, deletes all pages under that domain
-
-### Sidebar (click the toolbar icon)
-- **Jot down purpose** — write a note for the current page, press Enter to save
-- **Bidirectional sync** — edit notes on the new tab page ↔ see them instantly in the sidebar
-- **Quick entry** — prominent button at the bottom to open the archive portal, shows ⌘T shortcut
-
-### Design
-- **Local first** — all data in Chrome Storage Local, nothing leaves your machine
-- **Tunable thresholds** — click the gear icon to set custom discard / archive timeouts
+**Settings** — click the gear icon, adjust timeouts, takes effect immediately:
 
 ![Settings panel: customize discard and archive timeouts](screenshots/settings-panel.png)
-- **Dark mode** — follows system preference automatically
-- **Anthropic aesthetic** — warm tones, spring animations, quiet and restrained
 
-## Install
+## ⚡ Install
 
-1. Clone the repo or download the source
-2. Open Chrome, go to `chrome://extensions/`
+1. Clone or download the source
+2. Chrome → `chrome://extensions/`
 3. Enable "Developer mode" (top right)
-4. Click "Load unpacked" and select the project folder
+4. "Load unpacked" → select the project folder
 
-## Tech Stack
+## 🔒 Permissions
+
+<details>
+<summary>What permissions does it need, and why?</summary>
+
+| Permission | Why |
+|------------|-----|
+| `tabs` | Read tab state to detect idle ones |
+| `storage` | Store archive data + settings locally |
+| `alarms` | Periodic checks for inactive tabs |
+| `sidePanel` | Toolbar icon opens the sidebar |
+
+All data lives on your machine. Nothing is sent anywhere.
+
+</details>
+
+## ❓ FAQ
+
+<details>
+<summary>Where do archived tabs go?</summary>
+Open a new tab (⌘T). Every archived page shows up as a card. Search or click to restore.
+</details>
+
+<details>
+<summary>How do I change the freeze / archive timing?</summary>
+Gear icon ⚙ (top-right of new tab) → Settings panel → enter minutes. Takes effect instantly.
+</details>
+
+<details>
+<summary>Can it close the tab I'm currently using?</summary>
+No. The active tab is always skipped during auto-cleanup.
+</details>
+
+<details>
+<summary>What if I don't want a specific page archived?</summary>
+Jot a note for it in the Sidebar, or pin it in Chrome. Tabs playing audio or in picture-in-picture mode are also excluded.
+</details>
+
+## 🛠 Tech Stack
 
 Manifest V3 · Service Worker · Chrome Storage · Vanilla JS · CSS Custom Properties
