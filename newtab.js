@@ -19,9 +19,13 @@ const settingsOverlay = document.getElementById('settingsOverlay');
 const settingsClose = document.getElementById('settingsClose');
 const settingDiscard = document.getElementById('settingDiscard');
 const settingArchive = document.getElementById('settingArchive');
+const settingExemptInput = document.getElementById('settingExemptInput');
+const settingExemptAdd = document.getElementById('settingExemptAdd');
+const exemptDomainList = document.getElementById('exemptDomainList');
 
 // ===== 状态 =====
 let archivedTabs = [];
+let exemptDomains = [];
 let searchQuery = '';
 let timeFilter = 'all';
 let viewMode = 'tile';
@@ -32,7 +36,7 @@ document.addEventListener('DOMContentLoaded', init);
 
 async function init() {
   setupEventListeners();
-  await Promise.all([loadArchivedTabs(), loadSettings()]);
+  await Promise.all([loadArchivedTabs(), loadSettings(), loadExemptDomains()]);
   render();
 }
 
@@ -63,11 +67,24 @@ function setupEventListeners() {
   settingsOverlay.addEventListener('click', closeSettings);
   settingDiscard.addEventListener('change', saveSettings);
   settingArchive.addEventListener('change', saveSettings);
+  settingExemptAdd.addEventListener('click', addExemptDomain);
+  exemptDomainList.addEventListener('click', (e) => {
+    const removeBtn = e.target.closest('.exempt-remove-btn');
+    if (removeBtn) {
+      removeExemptDomain(removeBtn.dataset.domain);
+    }
+  });
 
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.archivedTabs) {
       archivedTabs = (changes.archivedTabs.newValue || []).sort((a, b) => b.archivedAt - a.archivedAt);
       render();
+    }
+    if (changes.config) {
+      loadExemptDomains().then(() => {
+        loadExemptList();
+        render();
+      });
     }
   });
 }
@@ -296,10 +313,14 @@ function renderGrouped(tabs) {
     const dotsHtml = Array.from({ length: dotCount }, () => '<span class="sphere-dot"></span>').join('');
     const overflow = domainTabs.length > 5 ? `<span class="sphere-overflow">+${domainTabs.length - 5}</span>` : '';
 
+    const isExempt = exemptDomains.some(d => d.toLowerCase() === domain.toLowerCase());
+    const eyeHtml = `<button class="panel-card-eye${isExempt ? ' active' : ''}" data-domain="${escapeAttr(domain)}" title="${isExempt ? '取消免杀' : '免杀此域名'}"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`;
+
     const cardsHtml = domainTabs.map(tab => `
         <div class="panel-card" data-url="${escapeAttr(tab.url)}" data-id="${escapeAttr(tab.id)}">
           <span class="panel-card-title" title="${escapeAttr(tab.title)}">${escapeHtml(tab.title)}</span>
           <span class="panel-card-time">${formatRelativeTime(tab.archivedAt)}</span>
+          ${eyeHtml}
           <button class="panel-card-delete" data-id="${escapeAttr(tab.id)}" title="删除">×</button>
         </div>`).join('');
 
@@ -336,7 +357,7 @@ function renderGrouped(tabs) {
   // 面板行点击恢复
   cardGrid.querySelectorAll('.panel-card').forEach(row => {
     row.addEventListener('click', (e) => {
-      if (e.target.closest('.panel-card-delete')) return;
+      if (e.target.closest('.panel-card-delete') || e.target.closest('.panel-card-eye')) return;
       restoreTab(row.dataset.url);
     });
   });
@@ -346,6 +367,14 @@ function renderGrouped(tabs) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       deleteArchivedTab(btn.dataset.id);
+    });
+  });
+
+  // 免杀眼睛
+  cardGrid.querySelectorAll('.panel-card-eye').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCardExemption(btn.dataset.domain);
     });
   });
 
@@ -408,6 +437,10 @@ function renderCards(tabs) {
       noteHtml = highlightMatches(noteHtml, searchQuery);
     }
 
+    const rootDomain = getRootDomain(tab.url);
+    const isExempt = exemptDomains.some(d => d.toLowerCase() === rootDomain.toLowerCase());
+    const eyeHtml = `<button class="card-eye${isExempt ? ' active' : ''}" data-domain="${escapeAttr(rootDomain)}" title="${isExempt ? '取消免杀' : '免杀此域名'}"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>`;
+
     return `
       <div class="card" data-id="${escapeAttr(tab.id)}" data-url="${escapeAttr(tab.url)}">
         <button class="card-delete" data-id="${escapeAttr(tab.id)}" title="删除">×</button>
@@ -417,6 +450,7 @@ function renderCards(tabs) {
         <div class="card-meta">
           <span class="card-time">${formatRelativeTime(tab.archivedAt)}</span>
           <span class="card-domain">${escapeHtml(domain)}</span>
+          ${eyeHtml}
         </div>
       </div>`;
   }).join('');
@@ -424,7 +458,7 @@ function renderCards(tabs) {
   // 卡片点击恢复
   cardGrid.querySelectorAll('.card').forEach(card => {
     card.addEventListener('click', (e) => {
-      if (e.target.closest('.card-note') || e.target.closest('.card-delete')) return;
+      if (e.target.closest('.card-note') || e.target.closest('.card-delete') || e.target.closest('.card-eye')) return;
       restoreTab(card.dataset.url);
     });
   });
@@ -434,6 +468,14 @@ function renderCards(tabs) {
     btn.addEventListener('click', (e) => {
       e.stopPropagation();
       deleteArchivedTab(btn.dataset.id);
+    });
+  });
+
+  // 免杀眼睛
+  cardGrid.querySelectorAll('.card-eye').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      toggleCardExemption(btn.dataset.domain);
     });
   });
 }
@@ -675,6 +717,7 @@ async function loadSettings() {
   const cfg = data.config || {};
   settingDiscard.value = Math.round((cfg.discardTimeoutMs || 30 * 60 * 1000) / 60000);
   settingArchive.value = Math.round((cfg.archiveTimeoutMs || 10 * 60 * 1000) / 60000);
+  loadExemptList();
 }
 
 function openSettings() {
@@ -701,4 +744,50 @@ async function saveSettings() {
   await chrome.storage.local.set({ config: newConfig });
   // 通知 service worker
   chrome.runtime.sendMessage({ type: 'setConfig', config: newConfig });
+}
+
+async function loadExemptDomains() {
+  const data = await chrome.storage.local.get('config');
+  exemptDomains = (data.config && data.config.exemptDomains) || [];
+}
+
+// ===== 免杀域名管理 =====
+async function loadExemptList() {
+  const data = await chrome.storage.local.get('config');
+  const domains = (data.config && data.config.exemptDomains) || [];
+  renderExemptDomains(domains);
+}
+
+function renderExemptDomains(domains) {
+  if (!domains || domains.length === 0) {
+    exemptDomainList.innerHTML = '<div class="exempt-empty">暂无免杀域名</div>';
+    return;
+  }
+  exemptDomainList.innerHTML = domains.map(d => `
+    <div class="exempt-domain-item">
+      <span class="exempt-domain-name">${escapeHtml(d)}</span>
+      <button class="exempt-remove-btn" data-domain="${escapeAttr(d)}" title="移除豁免">×</button>
+    </div>
+  `).join('');
+}
+
+async function addExemptDomain() {
+  const input = settingExemptInput.value.trim();
+  if (!input) return;
+  const domain = getRootDomain('https://' + input.replace(/^https?:\/\//, ''));
+  await chrome.runtime.sendMessage({ type: 'addExemptDomain', domain });
+  settingExemptInput.value = '';
+}
+
+async function removeExemptDomain(domain) {
+  await chrome.runtime.sendMessage({ type: 'removeExemptDomain', domain });
+}
+
+async function toggleCardExemption(domain) {
+  const isExempt = exemptDomains.some(d => d.toLowerCase() === domain.toLowerCase());
+  if (isExempt) {
+    await chrome.runtime.sendMessage({ type: 'removeExemptDomain', domain });
+  } else {
+    await chrome.runtime.sendMessage({ type: 'addExemptDomain', domain });
+  }
 }

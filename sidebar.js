@@ -17,8 +17,10 @@ async function init() {
   document.getElementById('title').textContent = currentTab.title || currentTab.url;
 
   await loadExistingNote();
+  await loadExemptStatus();
 
   document.getElementById('saveBtn').addEventListener('click', doSave);
+  document.getElementById('exemptBtn').addEventListener('click', toggleExemption);
 
   document.getElementById('noteInput').addEventListener('keydown', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) {
@@ -35,6 +37,9 @@ async function init() {
   chrome.storage.onChanged.addListener((changes) => {
     if (changes.archivedTabs || changes.watchedTabs) {
       loadExistingNote();
+    }
+    if (changes.config) {
+      loadExemptStatus();
     }
   });
 }
@@ -78,6 +83,44 @@ async function doSave() {
   fb.textContent = '已记录';
   fb.className = 'visible';
   setTimeout(() => { fb.className = ''; }, 1500);
+}
+
+async function loadExemptStatus() {
+  if (!currentTab) return;
+  const data = await chrome.storage.local.get('config');
+  const domains = (data.config && data.config.exemptDomains) || [];
+  const domain = getRootDomain(currentTab.url);
+  const isExempt = domains.some(d => d.toLowerCase() === domain);
+  const btn = document.getElementById('exemptBtn');
+  btn.textContent = isExempt ? '取消免杀' : '免杀此域名';
+  btn.classList.toggle('active', isExempt);
+}
+
+async function toggleExemption() {
+  if (!currentTab) return;
+  const domain = getRootDomain(currentTab.url);
+  const data = await chrome.storage.local.get('config');
+  const domains = (data.config && data.config.exemptDomains) || [];
+  const isExempt = domains.some(d => d.toLowerCase() === domain);
+
+  if (isExempt) {
+    await chrome.runtime.sendMessage({ type: 'removeExemptDomain', domain });
+  } else {
+    await chrome.runtime.sendMessage({ type: 'addExemptDomain', domain });
+  }
+}
+
+function getRootDomain(url) {
+  try {
+    let hostname = new URL(url).hostname.replace(/^www\./, '');
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      return parts.slice(1).join('.').toLowerCase();
+    }
+    return hostname.toLowerCase();
+  } catch {
+    return url;
+  }
 }
 
 function isTrackable(tab) {

@@ -83,6 +83,14 @@
           <span class="setting-label">不活跃多久后归档关闭（分钟）</span>
           <input type="number" id="settingArchive" min="1" max="43200" class="setting-input" />
         </label>
+        <div class="setting-divider"></div>
+        <div class="setting-section-title">免杀域名</div>
+        <div class="setting-section-desc">这些域名下的标签页永远不会被自动关闭或卸载</div>
+        <div id="exemptDomainList"></div>
+        <div class="exempt-add-row">
+          <input type="text" id="settingExemptInput" class="setting-input" placeholder="输入域名，如 gmail.com" />
+          <button id="settingExemptAdd" class="setting-btn">添加</button>
+        </div>
         <div id="settingsHint">修改后立即生效</div>
       </div>
     </div>

@@ -90,6 +90,38 @@ body {
   background: #1e40af;
 }
 
+#exemptBtn {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px 16px;
+  background: transparent;
+  color: #555;
+  border: 1px solid #d4d4cc;
+  border-radius: 6px;
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+#exemptBtn:hover {
+  background: #f0efe9;
+  border-color: #bbb;
+  color: #333;
+}
+
+#exemptBtn.active {
+  background: #fef2f2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+#exemptBtn.active:hover {
+  background: #fee2e2;
+  border-color: #f87171;
+}
+
 #feedback {
   margin-top: 8px;
   font-size: 12px;

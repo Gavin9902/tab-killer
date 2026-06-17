@@ -4,6 +4,7 @@ const DEFAULT_CONFIG = {
   archiveTimeoutMs: 10 * 60 * 1000,
   checkIntervalMinutes: 1,
   duplicateCheckIntervalMinutes: 10,
+  exemptDomains: [],
 };
 let config = { ...DEFAULT_CONFIG };
 const SESSION_SYNC_DEBOUNCE_MS = 2000;
@@ -224,6 +225,7 @@ async function handleDuplicateTabs() {
 
   for (const [url, entries] of urlMap) {
     if (entries.length <= 1) continue;
+    if (isDomainExempt(url)) continue;
 
     entries.sort((a, b) => b.lastActive - a.lastActive);
 
@@ -338,11 +340,11 @@ function isTrackable(tab) {
 }
 
 function isExemptFromDiscard(info) {
-  return info.pinned || info.audible;
+  return info.pinned || info.audible || isDomainExempt(info.url);
 }
 
 function isExemptFromArchive(info) {
-  return info.pinned;
+  return info.pinned || isDomainExempt(info.url);
 }
 
 function normalizeUrl(url) {
@@ -357,6 +359,46 @@ function normalizeUrl(url) {
   } catch {
     return url;
   }
+}
+
+function getRootDomain(url) {
+  try {
+    let hostname = new URL(url).hostname.replace(/^www\./, '');
+    const parts = hostname.split('.');
+    if (parts.length > 2) {
+      return parts.slice(1).join('.').toLowerCase();
+    }
+    return hostname.toLowerCase();
+  } catch {
+    return url;
+  }
+}
+
+function isDomainExempt(url) {
+  if (!config.exemptDomains || config.exemptDomains.length === 0) return false;
+  const domain = getRootDomain(url);
+  return config.exemptDomains.some(d => d.toLowerCase() === domain);
+}
+
+async function addExemptDomain(domain) {
+  const normalized = domain.toLowerCase().trim();
+  if (!normalized) return;
+  const domains = new Set(config.exemptDomains.map(d => d.toLowerCase()));
+  domains.add(normalized);
+  const newConfig = { ...config, exemptDomains: [...domains] };
+  await chrome.storage.local.set({ config: newConfig });
+  config = newConfig;
+}
+
+async function removeExemptDomain(domain) {
+  const normalized = domain.toLowerCase().trim();
+  if (!normalized) return;
+  const newConfig = {
+    ...config,
+    exemptDomains: config.exemptDomains.filter(d => d.toLowerCase() !== normalized),
+  };
+  await chrome.storage.local.set({ config: newConfig });
+  config = newConfig;
 }
 
 // ===== 消息处理 =====
@@ -380,6 +422,14 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     chrome.storage.local.set({ config: newConfig });
     config = newConfig;
     sendResponse({ success: true });
+    return true;
+  }
+  if (message.type === 'addExemptDomain') {
+    addExemptDomain(message.domain).then(() => sendResponse({ success: true }));
+    return true;
+  }
+  if (message.type === 'removeExemptDomain') {
+    removeExemptDomain(message.domain).then(() => sendResponse({ success: true }));
     return true;
   }
 });
