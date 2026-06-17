@@ -45,10 +45,19 @@ No manual cleanup. No folders. No thinking. Install and forget.
 
 ## ⚡ Install
 
-1. Clone or download the source
+1. Download the source and extract to a fixed directory (e.g., `~/tools/tab-killer`)
 2. Chrome → `chrome://extensions/`
 3. Enable "Developer mode" (top right)
-4. "Load unpacked" → select the project folder
+4. "Load unpacked" → select that directory
+
+> **⚠️ Don't reinstall to a different folder**: the extension ID is derived from the folder path. Moving it will orphan all your archived tabs.
+
+### Updating
+
+1. Download the latest source
+2. **Overwrite** the existing folder with the new files (same location)
+3. Go to `chrome://extensions/`, find Tab Killer, click the 🔄 **reload** button
+4. Done — all archived tabs and settings are preserved
 
 ## 🔒 Permissions
 
