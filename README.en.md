@@ -23,7 +23,7 @@ No manual cleanup. No folders. No thinking. Install and forget.
 | 🎯 **Dupe Killer** | Duplicate URLs auto-close every 10 minutes. The most recently active one survives. |
 | 📝 **Jot Notes** | Sidebar for capturing "why is this tab open?" Bidirectionally synced to the new tab page. |
 | 🌙 **Dark Mode** | Follows system preference. Warm Anthropic color palette. |
-| 🔒 **100% Local** | Everything in Chrome Storage Local. Nothing leaves your machine. |
+| 🛡 **Domain Exemption** | Whitelist domains you never want killed. Toggle on/off from hover panels. |
 
 ## 📸 Screenshots
 
@@ -85,7 +85,7 @@ No. The active tab is always skipped during auto-cleanup.
 
 <details>
 <summary>What if I don't want a specific page archived?</summary>
-Jot a note for it in the Sidebar, or pin it in Chrome. Tabs playing audio or in picture-in-picture mode are also excluded.
+Jot a note for it in the Sidebar, or pin it in Chrome. Tabs playing audio or in picture-in-picture mode are also excluded. You can also add the domain to the exemption whitelist — click the eye icon on any hover card in the new tab page.
 </details>
 
 ## 🛠 Tech Stack
